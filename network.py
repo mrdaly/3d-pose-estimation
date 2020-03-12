@@ -7,7 +7,7 @@ from pointnet_util import pointnet_sa_module, pointnet_fp_module
 
 def placeholder_inputs(batch_size, num_point):
     pointclouds_pl = tf.placeholder(tf.float32, shape=(batch_size, num_point, 3))
-    labels_pl = tf.placeholder(tf.float32, shape=(batch_size, num_point))
+    labels_pl = tf.placeholder(tf.float32, shape=(batch_size, num_point, 14))
     return pointclouds_pl, labels_pl
 
 
@@ -33,7 +33,7 @@ def get_model(point_cloud, is_training, bn_decay=None):
     net = tf_util.conv1d(l0_points, 128, 1, padding='VALID', bn=True, is_training=is_training, scope='fc1', bn_decay=bn_decay)
     end_points['feats'] = net
     net = tf_util.dropout(net, keep_prob=0.5, is_training=is_training, scope='dp1')
-    net = tf_util.conv1d(net, 1, 1, padding='VALID', activation_fn=None, scope='fc2')
+    net = tf_util.conv1d(net, 14, 1, padding='VALID', activation_fn=None, scope='fc2')
 
     return net, end_points
 
