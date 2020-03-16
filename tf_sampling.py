@@ -61,7 +61,7 @@ if __name__=='__main__':
     import numpy as np
     np.random.seed(100)
     triangles=np.random.rand(1,5,3,3).astype('float32')
-    with tf.device('/gpu:1'):
+    with tf.device('/gpu:0'):
         inp=tf.constant(triangles)
         tria=inp[:,:,0,:]
         trib=inp[:,:,1,:]
@@ -79,11 +79,11 @@ if __name__=='__main__':
         us=(uplusv+uminusv)*0.5
         vs=(uplusv-uminusv)*0.5
         pt_sample=tria_sample+(trib_sample-tria_sample)*tf.expand_dims(us,-1)+(tric_sample-tria_sample)*tf.expand_dims(vs,-1)
-        print 'pt_sample: ', pt_sample
+        print('pt_sample: ', pt_sample)
         reduced_sample=gather_point(pt_sample,farthest_point_sample(1024,pt_sample))
-        print reduced_sample
+        print(reduced_sample)
     with tf.Session('') as sess:
         ret=sess.run(reduced_sample)
-    print ret.shape,ret.dtype
-    import cPickle as pickle
-    pickle.dump(ret,open('1.pkl','wb'),-1)
+    print(ret.shape,ret.dtype)
+    #import cPickle as pickle
+    #pickle.dump(ret,open('1.pkl','wb'),-1)
