@@ -15,7 +15,6 @@ def get_model(point_cloud, is_training, bn_decay=None):
     """ Pose estimation PointNet, input is BxNx3, output BxNx1 """
     batch_size = point_cloud.get_shape()[0].value
     num_point = point_cloud.get_shape()[1].value
-    end_points = {}
     l0_xyz = tf.slice(point_cloud, [0,0,0], [-1,-1,3])
     l0_points = tf.slice(point_cloud, [0,0,3], [-1,-1,3])
 
@@ -31,18 +30,15 @@ def get_model(point_cloud, is_training, bn_decay=None):
 
     # FC layers
     net = tf_util.conv1d(l0_points, 128, 1, padding='VALID', bn=True, is_training=is_training, scope='fc1', bn_decay=bn_decay)
-    end_points['feats'] = net
     net = tf_util.dropout(net, keep_prob=0.5, is_training=is_training, scope='dp1')
     net = tf_util.conv1d(net, 14, 1, padding='VALID', activation_fn=None, scope='fc2')
 
-    return net, end_points
+    return net
 
 
 def get_loss(preds, labels):
     """ pred: BxNx14,
         label: BxNx14, """
-    #loss = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=pred, labels=label)
-    #classify_loss = tf.reduce_mean(loss)
     loss = tf.reduce_mean(tf.squared_difference(preds, labels))
     tf.summary.scalar('loss', loss)
     tf.add_to_collection('losses', loss)
