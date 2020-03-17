@@ -38,12 +38,12 @@ def get_model(point_cloud, is_training, bn_decay=None):
     return net, end_points
 
 
-def get_loss(pred, label):
-    """ pred: BxN,
-        label: BxN, """
+def get_loss(preds, labels):
+    """ pred: BxNx14,
+        label: BxNx14, """
     #loss = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=pred, labels=label)
     #classify_loss = tf.reduce_mean(loss)
-    loss = tf.reduce_mean(tf.squared_difference(pred, label))
+    loss = tf.reduce_mean(tf.squared_difference(preds, labels))
     tf.summary.scalar('loss', loss)
     tf.add_to_collection('losses', loss)
     return loss
